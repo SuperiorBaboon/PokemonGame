@@ -14,11 +14,95 @@ image.src = './MapSources/PelletTown.png';
 const playerImage = new Image();
 playerImage.src = './PokemonGameSources/Images/playerDown.png';
 
-image.onload = () => {
-    c.drawImage(image, -425, -375);
+class Sprite {
+    constructor({position, image}){
+        this.position = position
+        this.image = image
+    }
+
+    draw() {
+        c.drawImage(this.image, this.position.x, this.position.y);
+    }
+}
+
+const background = new Sprite({
+    position:{
+        x: -425,
+        y: -375
+    },
+    image: image
+})
+
+const player = new Sprite({
+    position:{
+        x:canvas.width/2 - playerImage.width/4/2,
+        y:canvas.height/2 - playerImage.height/2
+    }
+})
+
+const keys = {
+    w: {
+        pressed: false
+    },
+    a: {
+        pressed: false
+    },
+    s: {
+        pressed: false
+    },
+    d: {
+        pressed: false
+    },
+}
+
+function animate() {
+    window.requestAnimationFrame(animate)
+
     c.drawImage(
         playerImage,
-        canvas.width/2 - playerImage.width/2,
-        canvas.height/2 - playerImage.height/2
+        0,
+        0,
+        playerImage.width/4,
+        playerImage.height,
+        canvas.width/2 - playerImage.width/4/2,
+        canvas.height/2 - playerImage.height/2,
+        playerImage.width/4,
+        playerImage.height
     );
-};
+}
+
+animate()
+
+window.addEventListener('keydown', (e) => {
+    switch (e.key){
+        case 'w':
+            keys.w.pressed = true
+        break
+        case 'a':
+            keys.a.pressed = true
+        break
+        case 's':
+            keys.s.pressed = true
+        break
+        case 'd':
+            keys.d.pressed = true
+        break
+    }
+})
+
+window.addEventListener('keyup', (e) => {
+    switch (e.key){
+        case 'w':
+            keys.w.pressed = false
+        break
+        case 'a':
+            keys.a.pressed = false
+        break
+        case 's':
+            keys.s.pressed = false
+        break
+        case 'd':
+            keys.d.pressed = false
+        break
+    }
+})
