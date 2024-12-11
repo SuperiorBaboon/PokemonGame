@@ -1,8 +1,27 @@
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
+
+var element = document.getElementById('overlappingDiv');
+function fade(element) {
+    var op = 0;  // initial opacity
+    var timer = setInterval(function() {
+        let z=1
+        if (op <= 1){
+            function fadeout(){
+                z=1
+            }
+        }
+        op += z*0.01;
+        element.style.opacity = op;
+    }, 25);
+}
+
+
+
 canvas.width = 1024;
 canvas.height = 576;
 
+//define the data of battleZonesData
 const battleZonesData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -44,7 +63,7 @@ const battleZonesData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-
+//define the data of collisions
 const collisions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -86,23 +105,24 @@ const collisions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
+//slice the data of battleZonesMap to be read later
 const battleZonesMap = []
 for (let i = 0; i< battleZonesData.length; i+=70) {
     battleZonesMap.push(battleZonesData.slice(i, i + 70))
 }
 
+//slice the data of collisionsMap to be read later
     const collisionsMap = []
 for (let i = 0; i< collisions.length; i+=70) {
     collisionsMap.push(collisions.slice(i, i + 70))
 }
 
+//define where the collision blocks should be created
 const boundaries = []
-
 const offset = {
     x: -425,
     y: -375
 }
-
 collisionsMap.forEach((row,i) => {
     row.forEach((symbol,j) =>{
         if (symbol === 1025)
@@ -115,6 +135,7 @@ collisionsMap.forEach((row,i) => {
     })
 })
 
+//define where the battle zones should be created
 const battleZones = []
 
 battleZonesMap.forEach((row,i) => {
@@ -129,12 +150,15 @@ battleZonesMap.forEach((row,i) => {
     })
 })
 
+//background image
 const image = new Image();
 image.src = './MapSources/PelletTown.png';
 
+//foreground images
 const foregroundImage = new Image();
 foregroundImage.src = './MapSources/foregroundObjects.png';
 
+//player images
 const playerDownImage = new Image();
 playerDownImage.src = './PokemonGameSources/Images/playerDown.png';
 const playerUpImage = new Image();
@@ -144,7 +168,7 @@ playerRightImage.src = './PokemonGameSources/Images/playerRight.png';
 const playerLeftImage = new Image();
 playerLeftImage.src = './PokemonGameSources/Images/playerLeft.png';
 
-
+// Create object sprites
 const player = new Sprite({
     position:{
         x:canvas.width/2 - 192/3/2,
@@ -178,6 +202,7 @@ const foreground = new Sprite({
     image: foregroundImage
 })
 
+//pre set the keys are pressed to false
 const keys = {
     w: {
         pressed: false
@@ -192,9 +217,13 @@ const keys = {
         pressed: false
     }
 }
+//player speed set
+let playerSpeed = 2;
 
-let playerSpeed = 1;
+//define what can move
+const movables = [background, ...boundaries, foreground, ...battleZones]
 
+//collisions detect
 function rectangularCollision({rectangle1, rectangle2}){
     return (
         rectangle1.position.x + rectangle1.width >= rectangle2.position.x && 
@@ -204,9 +233,13 @@ function rectangularCollision({rectangle1, rectangle2}){
     )
 }
 
-const movables = [background, ...boundaries, foreground, ...battleZones]
+const battle = {
+    initiated: false
+}
+
 function animate() {
-    window.requestAnimationFrame(animate)
+    const animationId = window.requestAnimationFrame(animate)
+    //draw sprites
     background.draw();
     boundaries.forEach(boundary => {
         boundary.draw()
@@ -218,9 +251,36 @@ function animate() {
     foreground.draw()
 
     let moving = true;
-    player.moving = false
+    player.animate = false
+
+    if (battle.initiated) return
+    
+    //activate a battle
+    if (keys.w.pressed || keys.a.pressed || keys.s.pressed || keys.d.pressed){
+        for (let i = 0; i < battleZones.length; i++){
+            const battleZone = battleZones[i]
+
+            if (
+                rectangularCollision({
+                    rectangle1:player,
+                    rectangle2:battleZone
+                }) &&
+                Math.random() < 0.001
+            ){
+                console.log('battle activate')
+                battle.initiated = true
+                player.animate = false
+                window.cancelAnimationFrame(animationId)
+                animateBattle()
+                fade(element)
+                break
+            }
+        }
+    }
+
+    
     if (keys.w.pressed){
-        player.moving = true
+        player.animate = true
         player.image = player.sprites.up
         for (let i = 0; i < boundaries.length; i++){
             const boundary = boundaries[i]
@@ -243,9 +303,11 @@ function animate() {
         if (moving){
         movables.forEach((movable) => {movable.position.y+=playerSpeed})
         }
+        
+        
     } 
     if (keys.a.pressed){
-        player.moving = true
+        player.animate = true
         player.image = player.sprites.left
         for (let i = 0; i < boundaries.length; i++){
             const boundary = boundaries[i]
@@ -267,7 +329,7 @@ function animate() {
         }
     }
     if (keys.s.pressed){
-        player.moving = true
+        player.animate = true
         player.image = player.sprites.down
         for (let i = 0; i < boundaries.length; i++){
             const boundary = boundaries[i]
@@ -289,7 +351,7 @@ function animate() {
         }
     }
     if (keys.d.pressed){
-        player.moving = true
+        player.animate = true
         player.image = player.sprites.right
         for (let i = 0; i < boundaries.length; i++){
             const boundary = boundaries[i]
@@ -312,6 +374,47 @@ function animate() {
     }
 }
 animate()
+
+
+
+const battleBackgroundImage = new Image()
+battleBackgroundImage.src = './PokemonGameSources/Images/battleBackground.png'
+const battleBackground = new Sprite({
+    position:{ x:0, y:0 }, 
+    image: battleBackgroundImage,
+})
+
+const draggleImage = new Image()
+draggleImage.src = 'PokemonGameSources/Images/draggleSprite.png'
+const draggle = new Sprite({
+    position:{ x:800, y:100 },
+    image: draggleImage,
+    frames:{ max:4 },
+    animate: false
+})
+
+const embyImage = new Image()
+embyImage.src = 'PokemonGameSources/Images/embySprite.png'
+const emby = new Sprite({
+    position:{ x:280, y:330 },
+    image: embyImage,
+    frames:{ max:4 },
+    animate: false
+})
+
+function animateBattle(){
+    window.requestAnimationFrame(animateBattle)
+    battleBackground.draw()
+    draggle.draw()
+    emby.draw()
+}
+
+document.querySelectorAll('button').forEach(button => {
+    button.addEventListener('click', () => {
+        console.log(button)
+    })
+})
+
 
 let lastKey = ''
 window.addEventListener('keydown', (e) => {
