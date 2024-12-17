@@ -1,0 +1,70 @@
+
+ body{
+  background-size:cover;
+  background-image: url("https://codehs.com/uploads/815f5972de526245d6d3ea187909c6ca");
+  overflow: visible;
+  animation: imageMovement 2s linear infinite;
+  
+}
+
+
+
+
+
+.ball {
+  background-image: url("https://codehs.com/uploads/b776d20b102a0961a05ae706b200716c");
+  background-repeat: no-repeat;
+  background-size:cover;
+  height: 57px;
+  left: calc(25% - 50px);
+  position: absolute;
+  right: calc(50% - 50px);
+  width: 50px;
+  animation: bounce 1s ease-in-out infinite;
+  animation-fill-mode: both;
+  animation-direction: alternate;
+}
+
+span {
+  border-radius: 100%;
+  bottom: 27.5%;
+  left: calc(25% - 50px);
+  right: calc(50% - 50px);
+  position: absolute;
+  content: '';
+  background-color: black;
+  filter: blur(3px);
+  width: 50px;
+  height: 5px;
+  animation: shadow 1s ease-in-out infinite;
+  animation-fill-mode: both;
+  animation-direction: alternate;
+  z-index: -1;
+}
+
+@keyframes bounce {
+  from {
+    top: 50%;
+  }
+  to {
+    top: 55%;
+  }
+}
+
+
+@keyframes shadow {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: .5;
+    transform: scale(100%);
+  }
+}
+
+@keyframes imageMovement {
+    100% {
+        background-position-x: 360px; 
+    }        
+}

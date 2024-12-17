@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%;">
+
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- <link rel="stylesheet" href="LoadingAnimation.css" /> -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+    rel="stylesheet"
+  />
+    <style>
+      #fullscreen-button {
+        position: absolute;
+        top:  15px;
+        right:  15px;
+        background: rgba(0,0,0,0.05);
+        border:  0;
+        width:  40px;
+        height:  40px;
+        border-radius: 50%;
+        box-sizing: border-box;
+        transition:  transform .3s;
+        cursor:  pointer;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      #fullscreen-button:hover {
+          transform: scale(1.125);
+      }
+      #fullscreen-button svg:nth-child(2) { 
+          display: none;
+      }
+      [fullscreen] #fullscreen-button svg:nth-child(1) {
+          display: none;
+      }
+      [fullscreen] #fullscreen-button svg:nth-child(2) {
+          display: inline-block;
+      }
+        * {
+            font-family: 'Press Start 2P', cursive;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: black;
+            margin: 0;
+            height: 100%;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        button {
+            border: 0;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #ddd;
+        }
+
+        .question {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+
+        .answer-button {
+            /* Prevent opacity change on hover */
+            opacity: 1 !important;
+            margin: 5px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .answer-button:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Style for attack buttons */
+        .attack-button {
+            transition: opacity 0.3s;
+            position: relative;
+            z-index: 2;
+        }
+
+        #dialogueBox {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-color: white;
+            padding: 12px;
+            display: none;
+            cursor: pointer;
+            z-index: 1;
+        }
+
+        #attacksBox {
+            position: relative;
+            z-index: 2;
+        }
+
+        #victoryScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+            color: white;
+            text-align: center;
+        }
+
+        #victoryScreen h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: gold;
+        }
+
+        #victoryScreen p {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+
+        #playAgainButton {
+            padding: 15px 30px;
+            font-size: 20px;
+            background-color: gold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #playAgainButton:hover {
+            background-color: #ffd700;
+        }
+
+        #monstersCounter {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            z-index: 100;
+        }
+    </style>
+</head>
+
+<body style="position: absolute; z-index: 100000;">
+    <div class="ball"></div>
+
+    <div style="display: inline-block; position: relative; width: 100%; height: 100%;">
+        <div id="overlappingDiv"
+            style="
+                background-color: black;
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                opacity: 0;
+                pointer-events: none;
+                z-index: 10;
+            "></div>
+
+        <canvas style="
+            padding-left: 10px;
+            padding-right: 0;
+            left:50%;
+            width: 1.225*98vh;
+            height: 98vh;
+            z-index: 1;
+        "></canvas>
+        <div id="characterDialogueBox"
+            style="
+                background-color: white;
+                height: 140px;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                border-top: 4px black solid;
+                display: none;
+                padding: 12px;
+            "></div>
+
+        <div id="userInterface" style="display: none">
+            <!-- Represents health bar of draggle (enemy) -->
+            <div style="
+                background-color: white;
+                width: 250px;
+                position: absolute;
+                top: 50px;
+                left: 50px;
+                border: 4px black solid;
+                padding: 12px;
+            ">
+                <h1 id="enemyName" style="font-size: 16px">Fleshy Mass</h1>
+                <div style="position: relative">
+                    <div style="height: 5px; background-color: #ccc; margin-top: 10px"></div>
+                    <div id="enemyHealthBar" style="
+                        height: 5px;
+                        background-color: green;
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                    "></div>
+                </div>
+            </div>
+
+            <!-- Represents health bar of emby (us) -->
+            <div style="
+                background-color: white;
+                width: 250px;
+                position: absolute;
+                top: 330px;
+                right: 50px;
+                border: 4px black solid;
+                padding: 12px;
+            ">
+                <h1 style="font-size: 16px">Emby</h1>
+                <div style="position: relative">
+                    <div style="height: 5px; background-color: #ccc; margin-top: 10px"></div>
+                    <div id="playerHealthBar" style="
+                        height: 5px;
+                        background-color: green;
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                    "></div>
+                </div>
+            </div>
+
+            <div style="
+                background-color: white;
+                height: 140px;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                border-top: 4px black solid;
+                display: flex;
+            ">
+                <div id="dialogueBox"
+                    style="
+                        position: absolute;
+                        top: 0;
+                        right: 0;
+                        bottom: 0;
+                        left: 0;
+                        background-color: white;
+                        padding: 12px;
+                        display: none;
+                        cursor: pointer;
+                    "></div>
+                <div id="attacksBox"
+                    style="
+                        width: 66.66%;
+                        display: grid;
+                        grid-template-columns: repeat(4, 1fr);
+                    "></div>
+                <div style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 33.33%;
+                    border-left: 4px black solid;
+                ">
+                    <h1 id="attackType" style="font-size: 16px">Attack Type</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="monstersCounter">Monsters Defeated: 0</div>
+    <div id="victoryScreen">
+        <h1>Congratulations!</h1>
+        <p>You've defeated 10 monsters and mastered your knowledge!</p>
+        <button id="playAgainButton">Play Again</button>
+    </div>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"
+  integrity="sha512-6+YN/9o9BWrk6wSfGxQGpt3EUK6XeHi6yeHV+TYD2GR0Sj/cggRpXr1BrAQf0as6XslxomMUxXp2vIl+fv0QRA=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+></script>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"
+  integrity="sha512-H6cPm97FAsgIKmlBA4s774vqoN24V5gSQL4yBTDOY2su2DeXZVhQPxFK4P6GPdnZqM9fg1G3cMv5wD7e6cFLZQ=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+></script>
+    <script src="data/audio.js"></script>
+    <script src="data/battleZones.js"></script>
+    <script src="data/collisions.js"></script>
+<script src="data/attacks.js"></script>
+<script src="data/monsters.js"></script>
+<script src="data/characters.js"></script>
+<script src="js/utils.js"></script>
+<script src="classes.js"></script>
+<script src="index.js"></script>
+<script src="battleScene.js"></script>
+
+<div id="1" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>What is the function of a Div tag?</h2>
+  <button class="answer-button" data-correct="true">To make a container for other HTML elements</button>
+  <button class="answer-button" data-correct="false">To create a line in HTML</button>
+  <button class="answer-button" data-correct="false">To execute an HTML animation</button>
+  <button class="answer-button" data-correct="false">To power a computer</button>
+</div>
+
+<div id="2" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>What is the function of the heading tags?</h2>
+  <button class="answer-button" data-correct="true">To create headings and subheadings</button>
+  <button class="answer-button" data-correct="false">To store metadata</button>
+  <button class="answer-button" data-correct="false">To create a container in HTML</button>
+  <button class="answer-button" data-correct="false">To give a space for linking a CSS stylesheet to an HTML page</button>
+</div>
+
+<div id="3" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>What does HTML stand for?</h2>
+  <button class="answer-button" data-correct="true">Hyper Text Markup Language</button>
+  <button class="answer-button" data-correct="false">Hierarchical Text Moving Language</button>
+  <button class="answer-button" data-correct="false">Hovering Technical Multilinguistic Language</button>
+  <button class="answer-button" data-correct="false">Hyper Textile Making Language</button>
+</div>
+
+<div id="4" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>What is the correct way to write in an HTML comment?</h2>
+  <button class="answer-button" data-correct="true">&lt;!-- comment --&gt;</button>
+  <button class="answer-button" data-correct="false">/** comment **/</button>
+  <button class="answer-button" data-correct="false">//comment</button>
+  <button class="answer-button" data-correct="false">&lt; --comment-- &gt;</button>
+</div>
+
+<div id="5" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>Where should the body tag be located?</h2>
+  <button class="answer-button" data-correct="true">Inside the HTML tag, below the head tag</button>
+  <button class="answer-button" data-correct="false">In the Head tag</button>
+  <button class="answer-button" data-correct="false">Above the head tag</button>
+  <button class="answer-button" data-correct="false">Outside the HTML tag</button>
+</div>
+
+<div id="6" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>What does "CSS" stand for?</h2>
+  <button class="answer-button" data-correct="true">Cascading Style Sheets</button>
+  <button class="answer-button" data-correct="false">Custom Style System</button>
+  <button class="answer-button" data-correct="false">Computer Style Sheets</button>
+  <button class="answer-button" data-correct="false">Cool Styling Software</button>
+</div>
+
+<div id="7" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>What is the purpose of an iframe tag?</h2>
+  <button class="answer-button" data-correct="true">To embed another HTML page into the current page</button>
+  <button class="answer-button" data-correct="false">To create a navigation bar</button>
+  <button class="answer-button" data-correct="false">To execute JavaScript</button>
+  <button class="answer-button" data-correct="false">To insert multimedia content</button>
+</div>
+
+<div id="8" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>Which tag is used to link a stylesheet to an HTML index?</h2>
+  <button class="answer-button" data-correct="true">The link tag</button>
+  <button class="answer-button" data-correct="false">The style tag</button>
+  <button class="answer-button" data-correct="false">The meta tag</button>
+  <button class="answer-button" data-correct="false">The script tag</button>
+</div>
+
+<div id="9" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>How can you give specific styles only to elements with a specific class?</h2>
+  <button class="answer-button" data-correct="true">By using the "." selector in CSS</button>
+  <button class="answer-button" data-correct="false">By using the "#" selector</button>
+  <button class="answer-button" data-correct="false">By writing the class name without a selector</button>
+  <button class="answer-button" data-correct="false">By using inline CSS</button>
+</div>
+
+<div id="10" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>What information can be stored in a string (JavaScript)?</h2>
+  <button class="answer-button" data-correct="true">Letters and numbers</button>
+  <button class="answer-button" data-correct="false">Div tags</button>
+  <button class="answer-button" data-correct="false">Numbers only</button>
+  <button class="answer-button" data-correct="false">Letters only</button>
+</div>
+
+<div id="11" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>What does "DOM" stand for?</h2>
+  <button class="answer-button" data-correct="true">Document Object Model</button>
+  <button class="answer-button" data-correct="false">Data Optimization Mode</button>
+  <button class="answer-button" data-correct="false">Dynamic Output Model</button>
+  <button class="answer-button" data-correct="false">Data Object Mixture</button>
+</div>
+
+<div id="12" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>What does innerHTML do?</h2>
+  <button class="answer-button" data-correct="true">Inserts HTML content inside an element</button>
+  <button class="answer-button" data-correct="false">Changes the CSS of an element</button>
+  <button class="answer-button" data-correct="false">Deletes an element from the DOM</button>
+  <button class="answer-button" data-correct="false">Appends a child element</button>
+</div>
+
+<div id="13" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>What is the difference between "alert()" and "prompt()"?</h2>
+  <button class="answer-button" data-correct="true">"alert()" displays a message, while "prompt()" asks for user input</button>
+  <button class="answer-button" data-correct="false">Both are used for input collection</button>
+  <button class="answer-button" data-correct="false">Both are used for displaying div tags</button>
+  <button class="answer-button" data-correct="false">"alert()" asks for user input, while "prompt()" displays a message</button>
+</div>
+
+<div id="14" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>What is the most common location of the script tag?</h2>
+  <button class="answer-button" data-correct="true">Before the closing of the body tag</button>
+  <button class="answer-button" data-correct="false">In a CSS file</button>
+  <button class="answer-button" data-correct="false">In the head tag</button>
+  <button class="answer-button" data-correct="false">In a div tag</button>
+</div>
+
+<div id="15" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>Which attribute is used to define inline styles?</h2>
+  <button class="answer-button" data-correct="true">style</button>
+  <button class="answer-button" data-correct="false">class</button>
+  <button class="answer-button" data-correct="false">id</button>
+  <button class="answer-button" data-correct="false">inline</button>
+</div>
+
+<div id="16" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>What is the purpose of the "alt" attribute in an image tag?</h2>
+  <button class="answer-button" data-correct="true">To provide alternative text for accessibility</button>
+  <button class="answer-button" data-correct="false">To add a caption below the image</button>
+  <button class="answer-button" data-correct="false">To align the image to the right</button>
+  <button class="answer-button" data-correct="false">To change the image size</button>
+</div>
+
+<div id="17" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>Which method is used to add a new element to the end of an array in JavaScript?</h2>
+  <button class="answer-button" data-correct="true">push()</button>
+  <button class="answer-button" data-correct="false">add()</button>
+  <button class="answer-button" data-correct="false">append()</button>
+  <button class="answer-button" data-correct="false">concat()</button>
+</div>
+
+<div id="18" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>What does the "position: absolute" CSS property do?</h2>
+  <button class="answer-button" data-correct="true">Positions an element relative to its nearest positioned ancestor</button>
+  <button class="answer-button" data-correct="false">Fixes an element at a specific point in the viewport</button>
+  <button class="answer-button" data-correct="false">Sets an element at the top of the page</button>
+  <button class="answer-button" data-correct="false">Centers an element in the parent container</button>
+</div>
+
+<div id="19" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>What is the correct HTML tag for creating a numbered list?</h2>
+  <button class="answer-button" data-correct="true">&lt;ol&gt;</button>
+  <button class="answer-button" data-correct="false">&lt;ul&gt;</button>
+  <button class="answer-button" data-correct="false">&lt;li&gt;</button>
+  <button class="answer-button" data-correct="false">&lt;list&gt;</button>
+</div>
+
+<div id="20" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>What does the "return" statement do in JavaScript?</h2>
+  <button class="answer-button" data-correct="true">Stops the execution of a function and returns a value</button>
+  <button class="answer-button" data-correct="false">Pauses a script</button>
+  <button class="answer-button" data-correct="false">Runs a new script</button>
+  <button class="answer-button" data-correct="false">Reloads the page</button>
+</div>
+
+<div id="21" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>How do you define a variable in JavaScript?</h2>
+  <button class="answer-button" data-correct="true">Using let, var, or const</button>
+  <button class="answer-button" data-correct="false">Using varname</button>
+  <button class="answer-button" data-correct="false">Using int</button>
+  <button class="answer-button" data-correct="false">Using func</button>
+</div>
+
+<div id="22" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>Which attribute in HTML forms is used to specify where to send form data?</h2>
+  <button class="answer-button" data-correct="true">action</button>
+  <button class="answer-button" data-correct="false">method</button>
+  <button class="answer-button" data-correct="false">target</button>
+  <button class="answer-button" data-correct="false">name</button>
+</div>
+
+<div id="23" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+  <h2>Which of the following is NOT a valid CSS unit?</h2>
+  <button class="answer-button" data-correct="true">pxx</button>
+  <button class="answer-button" data-correct="false">em</button>
+  <button class="answer-button" data-correct="false">rem</button>
+  <button class="answer-button" data-correct="false">%</button>
+</div>
+
+  <div id="24" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+    <h2>What is the purpose of the "z-index" property in CSS?</h2>
+    <button class="answer-button" data-correct="true">To set the stack order of elements</button>
+    <button class="answer-button" data-correct="false">To create a grid layout</button>
+    <button class="answer-button" data-correct="false">To set the zoom level of an element</button>
+    <button class="answer-button" data-correct="false">To specify the width of an element</button>
+  </div>
+
+  <div id="25" class="question" style="opacity: 0; pointer-events: none; z-index: -1;">
+    <h2>What is the purpose of the "defer" attribute in a script tag?</h2>
+    <button class="answer-button" data-correct="true">To delay script execution until after the HTML is parsed</button>
+    <button class="answer-button" data-correct="false">To run the script immediately</button>
+    <button class="answer-button" data-correct="false">To cache the script for offline use</button>
+    <button class="answer-button" data-correct="false">To execute the script before styles load</button>
+  </div>
+
+  <body style="position: absolute; z-index: 100000;"> 
+    <div class="ball"></div>
+    
+  </body>
+</html>
